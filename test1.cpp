@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 
 //	test_asm();
 
-	test_cpp11();
+//	test_cpp11();
 
 	getchar();
 	return 0;
