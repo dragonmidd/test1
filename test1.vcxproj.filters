@@ -29,5 +29,11 @@
     <ClInclude Include="test_cpp11.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="test_stl.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="test_queue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
