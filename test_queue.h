@@ -42,7 +42,8 @@
 
 //Thread Local Storage
 //static  __thread_local_stored size_t  __thr_id;
-__thread_local_stored size_t  __thr_id;
+//__thread_local_stored size_t  __thr_id;
+__declspec(thread) static size_t __thr_id;
 
 // @return continous thread IDs starting from 0 as opposed to pthread_self().
 inline size_t thr_id()
@@ -135,7 +136,7 @@ public:
 		* se we don't need a memory barrier here.
 		*/
 #ifdef WIN32_64
-		thr_pos().head = head_;
+		thr_pos().head = head_.load();
 		thr_pos().head = head_.fetch_add(1);
 #else
 		thr_pos().head = head_;
@@ -160,6 +161,7 @@ public:
 				// Force compiler to use tmp_h exactly once.
 #ifdef WIN32_64
 	//			__asm __volatile{ "" ::: "memory" };
+				do {__asm {mfence}}while(0);
 #else
 				asm volatile("" ::: "memory");
 #endif
@@ -214,6 +216,7 @@ public:
 				// Force compiler to use tmp_h exactly once.
 #ifdef WIN32_64
 				//__asm volatile("" ::: "memory");
+				do {__asm {mfence}}while(0);
 #else
 				asm volatile("" ::: "memory");
 #endif
@@ -272,8 +275,8 @@ private:
 * ------------------------------------------------------------------------
 */
 static const auto N = 10000;//QUEUE_SIZE * 10;
-static const auto CONSUMERS = 4;
-static const auto PRODUCERS = 4;
+static const auto CONSUMERS = 1;
+static const auto PRODUCERS = 3;
 
 typedef unsigned char	q_type;
 
@@ -372,8 +375,8 @@ run_test(Q &&q)
 	}
 
 //	::usleep(10 * 1000); // sleep to wait the queue is full
-//	std::this_thread::sleep_for(std::chrono::milliseconds(10));
-	Sleep(10);
+	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+//	Sleep(10);
 
 
 	/*
