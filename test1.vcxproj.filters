@@ -35,5 +35,14 @@
     <ClInclude Include="test_queue.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="test_multithread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="test_cpp11_future.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="test_windows.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
