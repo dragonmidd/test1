@@ -26,5 +26,6 @@ int test_cpp11_future()
 	prom.set_value(20); // 设置共享状态的值, 此处和线程t保持同步.
 	t.join();
 	return 0;
+	//todo 2
 }
 
