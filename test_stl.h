@@ -1,6 +1,7 @@
 #include<string>
 #include <iostream>
 #include <sstream>
+#include<stdint.h>
 using namespace std;
 
 void test_string()
@@ -34,8 +35,34 @@ void test_stringstream()
 	std::cout << ss2.str() << "length:" << ss2.str().length();
 }
 
+std::string hex_to_oct(const std::string& hex)
+{
+	int fill_len = 3 - hex.length() % 3;
+	std::string std_hex, oct;
+	if (fill_len > 0 && fill_len < 3) std_hex.append(fill_len, '0');
+	std_hex.append(hex);
+	char oct_unit[5] = { 0 };
+
+	for (int i = 0; i < std_hex.length(); i += 3)
+	{	
+		uint16_t num = std::stoi(std_hex.substr(i, 3), 0, 16);	
+		if(i==0)sprintf(oct_unit, "%o", num);
+		else sprintf(oct_unit, "%04o", num);
+		oct.append(oct_unit);
+	}
+
+// 	size_t pos = std_oct.find_first_not_of('0');
+// 	if (pos == std::string::npos) return std::string("0");
+// 	else return std_oct.substr(pos, std_oct.length() - pos);
+	return oct;
+}
+
 void test_stl()
 {
 //	test_string();
-	test_stringstream();
+//	test_stringstream();
+	string hex;
+	std::cout << "input hex:";
+	std::cin >> hex;
+	std::cout << "output oct:" << hex_to_oct(hex) << std::endl;
 }

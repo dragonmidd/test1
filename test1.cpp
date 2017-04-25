@@ -9,24 +9,27 @@
 
 int main(int argc, char** argv)
 {
-//	test_boost_thread();
+	while (true)
+	{
+		//	test_boost_thread();
 
-//	test_asm();
+		//	test_asm();
 
-//	test_cpp11();
+		//	test_cpp11();
 
-//	test_stl();
+		test_stl();
 
-//	test_queue();
+		//	test_queue();
 
-//	test_multithread();
+		//	test_multithread();
 
-//	test_cpp11_future();
+		//	test_cpp11_future();
 
-	//todo
-	test_windows();
+		//todo
+		//	test_windows();
 
-	getchar();
+		if(getchar()=='q') break;
+	}
 	return 0;
 }
 
