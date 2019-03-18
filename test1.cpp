@@ -17,13 +17,14 @@ int main(int argc, char** argv)
 
 		//	test_cpp11();
 
-		test_stl();
+		//  test_stl();
 
 		//	test_queue();
 
 		//	test_multithread();
 
 		//	test_cpp11_future();
+		test_2threads_print_odevity();
 
 		//todo
 		//	test_windows();

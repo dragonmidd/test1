@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include<stdint.h>
+#include<map>
 using namespace std;
 
 void test_string()
@@ -57,12 +58,23 @@ std::string hex_to_oct(const std::string& hex)
 	return oct;
 }
 
+void test_map()
+{
+	map<string, int> m;
+	m["hello"] = 1;
+	int i = m["world"];
+	printf("%d\n",i);
+}
+
 void test_stl()
 {
 //	test_string();
 //	test_stringstream();
-	string hex;
-	std::cout << "input hex:";
-	std::cin >> hex;
-	std::cout << "output oct:" << hex_to_oct(hex) << std::endl;
+// 	string hex;
+// 	std::cout << "input hex:";
+// 	std::cin >> hex;
+// 	std::cout << "output oct:" << hex_to_oct(hex) << std::endl;
+
+//	int i = std::stoi(std::string(""));
+	test_map();
 }
