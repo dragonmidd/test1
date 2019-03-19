@@ -32,6 +32,7 @@ int test_cpp11_future()
 }
 
 // 两个线程交替打印100以内的奇数偶数
+// ------------------------------------------------------------------------------------------------------
 void print_use_atomic(int thrd_no, std::atomic<int>& a1, std::atomic<int>& a2)
 {
 	int a_old = 0;
@@ -57,18 +58,20 @@ void print_use_atomic(int thrd_no, std::atomic<int>& a1, std::atomic<int>& a2)
 }
 
 // 两个线程交替打印100以内的奇数偶数
-void print_use_condition(int thrd_no, int& a, std::condition_variable& cv, std::mutex& mutex)
+void print_use_condition(int thrd_no, int& a1, int& a2, std::condition_variable& cv1, std::mutex& m1, std::condition_variable& cv2)
 {
-	int a_old = thrd_no-2;
+	int a_old = a1 + 2;
 	while (true)
 	{
-		std::unique_lock<std::mutex> lock(mutex);
-		while (a != a_old + 2) cv.wait(lock);
-		std::cout << "thread" << thrd_no << ":" << a << std::endl;
-		++a_old;
-		++a;
-		cv.notify_one();
-		if (a > 100) break;
+		{
+			std::unique_lock<std::mutex> lck(m1);
+			while (a1 != a_old) cv1.wait(lck);
+			std::cout << "thread" << thrd_no << ":" << a1 << std::endl;
+			a2 += 2;
+		}
+		a_old += 2;
+		cv2.notify_one();
+		if (a_old > 100) break;
 	}
 }
 
@@ -91,15 +94,15 @@ int print_odevity_use_atomic()
 
 int print_odevity_use_condition()
 {
-	int a = -1;
-	std::condition_variable cv;
-	std::mutex mutex;
-	std::thread t1(print_use_condition, 1, std::ref(a), std::ref(cv), std::ref(mutex)); // 线程t1，负责打印奇数.
-	std::thread t2(print_use_condition, 2, std::ref(++a), std::ref(cv), std::ref(mutex)); // 线程t2， 负责打印偶数
+	int a1 = -1, a2 = 0;
+	std::condition_variable cv1,cv2;
+	std::mutex m1;
+	std::thread t1(print_use_condition, 1, std::ref(a1), std::ref(a2), std::ref(cv1), std::ref(m1), std::ref(cv2)); // 线程t1，负责打印奇数.
+	std::thread t2(print_use_condition, 2, std::ref(a2), std::ref(a1), std::ref(cv2), std::ref(m1), std::ref(cv1)); // 线程t2， 负责打印偶数
 
 	//开始打印
-	++a;
-	cv.notify_all();
+	a1 = 1;
+	cv1.notify_all();
 
 	t1.join();
 	t2.join();

@@ -17,7 +17,7 @@
 #include <WinBase.h>
 #define ____cacheline_aligned	__declspec(align(DCACHE1_LINESIZE))
 #define __thread_local_stored	__declspec(thread)
-#define ALIGNED_MALLOC(alignment, size)	_aligned_malloc(alignment, size)
+#define ALIGNED_MALLOC(alignment, size)	_aligned_malloc(size, alignment)
 #define ALIGNED_FREE(ptr)	_aligned_free(ptr)
 #define __builtin_expect(EXP, C)  (EXP)
 #else
@@ -42,8 +42,8 @@
 
 //Thread Local Storage
 //static  __thread_local_stored size_t  __thr_id;
-//__thread_local_stored size_t  __thr_id;
-__declspec(thread) static size_t __thr_id;
+__thread_local_stored size_t  __thr_id;
+//__declspec(thread) static size_t __thr_id;
 
 // @return continous thread IDs starting from 0 as opposed to pthread_self().
 inline size_t thr_id()
@@ -91,9 +91,9 @@ public:
 		, last_head_(0)
 		, last_tail_(0)
 	{
-//		size_t n = std::max(n_consumers_, n_producers_);
+		size_t n = std::max(n_consumers_, n_producers_);
 //		size_t n = std::min(1, 999);
-		size_t n = n_producers_;
+//		size_t n = n_producers_;
 		thr_p_ = (ThrPos *)ALIGNED_MALLOC(get_page_size(), sizeof(ThrPos) * n);
 		assert(thr_p_);
 		// Set per thread tail and head to ULONG_MAX.
@@ -115,8 +115,7 @@ public:
 		return thr_p_[ThrId()];
 	}
 
-	void
-		push(T *ptr)
+	void push(T *ptr)
 	{
 		/*
 		* Request next place to push.
@@ -136,7 +135,7 @@ public:
 		* se we don't need a memory barrier here.
 		*/
 #ifdef WIN32_64
-		thr_pos().head = head_.load();
+		thr_pos().head = head_.load();	//tangxy: 这句不是多余的？
 		thr_pos().head = head_.fetch_add(1);
 #else
 		thr_pos().head = head_;
@@ -158,7 +157,7 @@ public:
 				auto tmp_t = thr_p_[i].tail;
 
 				//tangxy:感觉这个内存屏障不必要，因为tmp_t和min赋值有依赖关系，至少x86体系能保证顺序不会被重排？
-				// Force compiler to use tmp_h exactly once.
+				// Force compiler to use tmp_t exactly once.
 #ifdef WIN32_64
 	//			__asm __volatile{ "" ::: "memory" };
 				do {__asm {mfence}}while(0);
@@ -181,8 +180,7 @@ public:
 		thr_pos().head = ULONG_MAX;
 	}
 
-	T *
-		pop()
+	T *	pop()
 	{
 		/*
 		* Request next place from which to pop.
@@ -375,7 +373,7 @@ run_test(Q &&q)
 	}
 
 //	::usleep(10 * 1000); // sleep to wait the queue is full
-	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+//	std::this_thread::sleep_for(std::chrono::milliseconds(10));
 //	Sleep(10);
 
 
